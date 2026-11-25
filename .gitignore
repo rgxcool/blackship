@@ -1,3 +1,31 @@
+
+# Environment (keep the .example files)
+.env
+.env.*
+!.env.example
+
+# Go
+backend/bin/
+backend/tmp/
+*.test
+*.out
+coverage.out
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright/.cache/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+*.log
 # Dependencies
 node_modules/
 
