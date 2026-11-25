@@ -1,0 +1,1 @@
+export { AddUniversity } from "./AddUniversity";

@@ -1,0 +1,1 @@
+export { EditUniversity } from "./EditUniversity";
