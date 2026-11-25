@@ -14,7 +14,6 @@ BE/feature name
 | Config | Viper |
 | Backend tests | Testify, testcontainers |
 | Frontend | React, TanStack, Tailwind |
-| Frontend tests | Playwright |
 | Dev | Docker, Makefile |
 
 ## Folders
