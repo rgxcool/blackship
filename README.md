@@ -12,7 +12,7 @@ another company's details.
 | Part | Tools |
 |---|---|
 | Backend | Go, Huma, Gorilla Mux, GORM with pgx, FX |
-| Data | PostgreSQL, Redis, Atlas migrations |
+| Data | PostgreSQL, Atlas migrations |
 | Config | Viper |
 | Backend tests | Testify, testcontainers |
 | Frontend | React, TanStack, Tailwind |
