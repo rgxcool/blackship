@@ -1,11 +1,9 @@
 # centralize-directory
 
-# Central Directory
 
-One shared directory of universities and courses for Asterconsult CRM.
-Each university and course exists once. Every partner company (for example
-KIEC, KEF, XYZ) can add its own private details on top, and nobody can see
-another company's details.
+for the branch name 
+for backend use:
+BE/feature name
 
 ## Stack
 
