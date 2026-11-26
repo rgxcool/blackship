@@ -1,1 +1,0 @@
-export { CourseDirectory } from "./ui";

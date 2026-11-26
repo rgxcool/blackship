@@ -1,1 +1,0 @@
-export { DirectoryHeader } from "./ui";
