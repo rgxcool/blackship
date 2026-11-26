@@ -1,1 +1,0 @@
-export { PartnerBadge } from "./PartnerBadge";
