@@ -1,5 +1,6 @@
-h1:nwUZmyA4cFDHNiRrRggMnz6KAB4DvhUwcgPQsSJiFRw=
+h1:FxafgdDzIYaRZ7js7SF+mqiqY6487aMQYTOq7VwDD7E=
 001_initial.sql h1:eVqMwXKYTNVOqY/qj49GDOjy20G4pEGmyRj2zKmHLV0=
 20261125094435_create_country.sql h1:vzShdWp/FOz5KbPwHgoIdaiPyl+IJnzoIc4JCtW9AmQ=
 20261126083910_create_enterprise.sql h1:qFA0qM6qgGBGf1rzO5up8DFN9+mTOJYsMaEJ4OQq/bA=
 20261126084859_create_university.sql h1:7JZ8Tbgh+5xj3Xx+BdUCrIptRZYRkYjaLZ8SY4ckeI8=
+20261126090656_create_course.sql h1:v5ir+QSzIBeWtBEoA/1T82DrVd99s3d93d7KXmEpUhY=
