@@ -1,5 +1,5 @@
 CREATE TABLE enterprise (
-    enterprise_id   uuid PRIMARY KEY DEFAULT uuidv7(),
+    enterprise_id   varchar(16) PRIMARY KEY DEFAULT left(replace(gen_random_uuid()::text, '-', ''), 16),
     name            text NOT NULL,
     slug            text NOT NULL,
     god_registry_id text,
