@@ -1,1 +1,2 @@
-export { httpClient } from "./client";
+
+export { apiFetch } from './client';

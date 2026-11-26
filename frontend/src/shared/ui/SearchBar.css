@@ -1,0 +1,128 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 5px 6px 5px 16px;
+  border: 1px solid #dfe6ef;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.search-bar:focus-within {
+  border-color: #5b46f6;
+  box-shadow: 0 0 0 3px rgb(91 70 246 / 12%);
+}
+
+.search-bar-label {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.search-icon {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  place-items: center;
+  color: #78808f;
+}
+
+.search-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.search-bar input {
+  min-width: 0;
+  flex: 1;
+  padding: 9px 0;
+  border: 0;
+  outline: 0;
+  color: #1e2432;
+  font: inherit;
+  font-size: 14px;
+}
+
+.search-bar input::placeholder {
+  color: #9aa5b5;
+}
+
+.search-bar input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.clear-search {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #77859a;
+  cursor: pointer;
+  font: inherit;
+  font-size: 22px;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.clear-search:disabled {
+  opacity: 0.35;
+}
+
+.clear-search:not(:disabled):hover {
+  background: #eef0ff;
+  color: #5b46f6;
+}
+
+.search-submit {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 20px;
+  border: 1px solid #5b46f6;
+  border-radius: 9px;
+  background: #5b46f6;
+  box-shadow: 0 3px 8px rgb(91 70 246 / 18%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.search-submit:hover {
+  background: #4b38e8;
+  box-shadow: 0 5px 12px rgb(91 70 246 / 24%);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .search-bar {
+    min-height: 52px;
+    gap: 7px;
+    padding-left: 11px;
+  }
+
+  .search-submit {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+}
