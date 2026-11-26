@@ -1,7 +1,7 @@
 CREATE TABLE course (
-    course_id                  uuid PRIMARY KEY DEFAULT uuidv7(),
-    university_id              uuid NOT NULL REFERENCES university (university_id),
-    created_by_enterprise_id   uuid NOT NULL REFERENCES enterprise (enterprise_id),
+    course_id                  varchar(16) PRIMARY KEY DEFAULT left(replace(gen_random_uuid()::text, '-', ''), 16),
+    university_id              varchar(16) NOT NULL REFERENCES university (university_id),
+    created_by_enterprise_id   varchar(16) NOT NULL REFERENCES enterprise (enterprise_id),
     is_asterconsult            boolean NOT NULL DEFAULT false,
     course_name                text NOT NULL,
     course_code                text,

@@ -1,6 +1,6 @@
 CREATE TABLE university (
-    university_id                  uuid PRIMARY KEY DEFAULT uuidv7(),
-    created_by_enterprise_id       uuid NOT NULL REFERENCES enterprise (enterprise_id),
+    university_id                  varchar(16) PRIMARY KEY DEFAULT left(replace(gen_random_uuid()::text, '-', ''), 16),
+    created_by_enterprise_id       varchar(16) NOT NULL REFERENCES enterprise (enterprise_id),
     country_iso                    varchar(3) NOT NULL REFERENCES country (country_iso),
     is_asterconsult                boolean NOT NULL DEFAULT false,
     name                           text NOT NULL,
@@ -73,7 +73,7 @@ CREATE INDEX university_ownership_type_gin
 
 CREATE TABLE university_slug_alias (
     slug          text PRIMARY KEY,
-    university_id uuid NOT NULL REFERENCES university (university_id),
+    university_id varchar(16) NOT NULL REFERENCES university (university_id),
     created_at    timestamptz NOT NULL DEFAULT now()
 );
 
