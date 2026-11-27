@@ -6,29 +6,75 @@ const TOKEN_KEY = 'access_token';
 const REDIRECT_KEY = 'redirect';
 const STATE_KEY = 'casdoor-state';
 
-const sdk = new Sdk({
+export interface CasdoorProfile {
+  name?: string;
+  displayName?: string;
+  // firstName?: string;
+  // lastName?: string;
+  email?: string;
+  avatar?: string;
+}
+
+const casdoorConfig = {
   serverUrl: SERVER_URL,
   clientId: import.meta.env.VITE_CASDOOR_CLIENT_ID,
   appName: import.meta.env.VITE_CASDOOR_APP_NAME,
   organizationName: import.meta.env.VITE_CASDOOR_ORGANIZATION_NAME,
   redirectPath: '/callback',
-});
+};
 
-export function getToken(): string | null {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (!token) return null;
+const hasCasdoorConfig = Object.values(casdoorConfig).every(
+  (value) => typeof value === 'string' && value.length > 0,
+);
+
+const sdk = hasCasdoorConfig ? new Sdk(casdoorConfig) : null;
+
+function parseJwt(token: string): Record<string, unknown> | null {
   try {
     const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(atob(payload)).exp * 1000 > Date.now() ? token : null;
+    return JSON.parse(atob(payload)) as Record<string, unknown>;
   } catch {
     return null;
   }
 }
 
+export function isAuthConfigured(): boolean {
+  return hasCasdoorConfig;
+}
+
+export function getToken(): string | null {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+  const payload = parseJwt(token);
+  const exp = typeof payload?.exp === 'number' ? payload.exp : null;
+  return exp && exp * 1000 > Date.now() ? token : null;
+}
+
+export function getProfile(): CasdoorProfile | null {
+  const token = getToken();
+  if (!token) return null;
+  const payload = parseJwt(token);
+  if (!payload) return null;
+
+  return {
+    name: typeof payload.name === 'string' ? payload.name : undefined,
+    displayName: typeof payload.displayName === 'string' ? payload.displayName : undefined,
+    email: typeof payload.email === 'string' ? payload.email : undefined,
+    avatar: typeof payload.avatar === 'string' ? payload.avatar : undefined,
+  };
+}
+
 export function login(): void {
+  if (!sdk) {
+    console.error('Casdoor auth is not configured. Set VITE_CASDOOR_* env vars.');
+    return;
+  }
   const { pathname, search } = window.location;
   if (pathname !== '/callback') sessionStorage.setItem(REDIRECT_KEY, pathname + search);
-  window.location.href = sdk.getSigninUrl();
+  const signinUrl = sdk.getSigninUrl();
+  const state = new URL(signinUrl).searchParams.get('state');
+  if (state) sessionStorage.setItem(STATE_KEY, state);
+  window.location.href = signinUrl;
 }
 
 

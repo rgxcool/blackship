@@ -88,7 +88,9 @@
 }
 
 .directory-panel {
-  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  overflow: visible;
   border: 1px solid #e7ecf3;
   border-radius: 14px;
   background: #fff;
@@ -1327,24 +1329,7 @@
     gap: 12px;
   }
 
-  .view-course {
+    .view-course {
     min-width: 130px;
   }
-}
-.logout-button {
-  float: right;
-  min-height: 38px;
-  padding: 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: #fff;
-  color: #4b5362;
-  cursor: pointer;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.logout-button:hover {
-  background: #f4f5f8;
 }

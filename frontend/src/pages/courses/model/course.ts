@@ -44,5 +44,6 @@ export interface CourseFilterValues {
   intake: string;
   language: string;
   verified: boolean;
+  interviewNeeded: boolean;
   partner: string;
 }

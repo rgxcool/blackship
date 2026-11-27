@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SearchableSelect, Select } from "@/shared/ui";
-import { iso3166Countries } from "@/shared/lib/countries";
+import { getCountryByIso3, searchCountriesPage } from "@/shared/api";
 import type { CourseFilterValues } from "../model/course";
 import {
   advancedCourseFilterOptions,
@@ -17,7 +18,51 @@ interface CourseFiltersProps {
 }
 
 export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) {
+  const queryClient = useQueryClient();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["countries", "search", countrySearch],
+    queryFn: ({ pageParam, signal }) => searchCountriesPage(countrySearch, pageParam, 10, signal),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.page + 1 : undefined),
+    staleTime: 5 * 60 * 1000,
+  });
+  const countries = useMemo(() => {
+    const items = data?.pages.flatMap((p) => p.items) ?? [];
+    const seen = new Set<string>();
+    return items.filter((country) => {
+      if (seen.has(country.iso3)) return false;
+      seen.add(country.iso3);
+      return true;
+    });
+  }, [data]);
+  const { data: selectedCountry } = useQuery({
+    queryKey: ["countries", "by-iso3", filters.country],
+    queryFn: ({ signal }) => getCountryByIso3(filters.country, signal),
+    enabled: Boolean(filters.country) && !countries.some((c) => c.iso3 === filters.country),
+    staleTime: 5 * 60 * 1000,
+  });
+  const countryOptions = useMemo(() => {
+    const list =
+      !countrySearch.trim() &&
+      selectedCountry &&
+      !countries.some((c) => c.iso3 === selectedCountry.iso3)
+        ? [selectedCountry, ...countries]
+        : countries;
+    return list.map(({ name, iso3 }) => ({
+      label: `${name} (${iso3})`,
+      value: iso3,
+      keywords: [name, iso3],
+    }));
+  }, [countries, countrySearch, selectedCountry]);
   const toolbarFilters = courseFilterOptions.filter((filter) => filter.label !== "Country" && filter.label !== "Partner");
   const updateFilters = (updates: Partial<CourseFilterValues>) =>
     onFiltersChange({ ...filters, ...updates });
@@ -28,15 +73,23 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
         <div className="filter-selects">
           <SearchableSelect
             label="Country"
-            onChange={(country) => updateFilters({ country })}
-            options={iso3166Countries.map(({ name, iso3 }) => ({
-              label: `${name} (${iso3})`,
-              value: iso3,
-              keywords: [name, iso3],
-            }))}
+            onChange={(countryIso3) => {
+              const matched = countries.find((c) => c.iso3 === countryIso3);
+              if (matched) {
+                queryClient.setQueryData(["countries", "by-iso3", countryIso3], matched);
+              }
+              updateFilters({ country: countryIso3 });
+            }}
+            options={countryOptions}
             placeholder="Any country"
             searchPlaceholder="Search country or ISO-3 code..."
             value={filters.country}
+            onSearchChange={setCountrySearch}
+            isLoading={isLoading}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={!!hasNextPage}
+            onLoadMore={() => fetchNextPage()}
+            emptyMessage={isError ? "Failed to load countries." : undefined}
           />
           <SearchableSelect
             label="University"
@@ -53,12 +106,13 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
             return (
               <label className="filter-field" key={filter.label}>
                 <span className="visually-hidden">{filter.label}</span>
-                <Select
-                  value={value}
-                  aria-label={filter.label}
+                <SearchableSelect
+                  label={filter.label}
                   options={filter.options}
+                  value={value}
                   placeholder={filter.placeholder}
                   onChange={(nextValue) => updateFilters({ [key]: nextValue })}
+                  searchPlaceholder={`Search ${filter.label.toLowerCase()}...`}
                 />
               </label>
             );
@@ -88,47 +142,57 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
           <div className="advanced-filter-grid">
             <label className="advanced-filter-field">
               <span>Stream</span>
-              <Select
-                value={filters.stream}
+              <SearchableSelect
+                label="Stream"
                 options={advancedCourseFilterOptions.streams}
+                value={filters.stream}
                 placeholder="Any stream"
                 onChange={(value) => updateFilters({ stream: value })}
+                searchPlaceholder="Search stream..."
               />
             </label>
             <label className="advanced-filter-field">
               <span>Faculty</span>
-              <Select
-                value={filters.faculty}
+              <SearchableSelect
+                label="Faculty"
                 options={courseFaculties}
+                value={filters.faculty}
                 placeholder="Any faculty"
                 onChange={(value) => updateFilters({ faculty: value })}
+                searchPlaceholder="Search faculty..."
               />
             </label>
             <label className="advanced-filter-field">
               <span>Specialization</span>
-              <Select
-                value={filters.specialization}
+              <SearchableSelect
+                label="Specialization"
                 options={courseSpecializations}
+                value={filters.specialization}
                 placeholder="Any specialization"
                 onChange={(value) => updateFilters({ specialization: value })}
+                searchPlaceholder="Search specialization..."
               />
             </label>
             <label className="advanced-filter-field">
               <span>Partner</span>
-              <Select
-                value={filters.partner}
+              <SearchableSelect
+                label="Partner"
                 options={courseFilterOptions[3].options}
+                value={filters.partner}
                 placeholder="Any partner"
                 onChange={(value) => updateFilters({ partner: value })}
+                searchPlaceholder="Search partner..."
               />
             </label>
             <label className="advanced-filter-field">
               <span>Course duration</span>
-              <Select
-                value={filters.duration}
+              <SearchableSelect
+                label="Course duration"
                 options={advancedCourseFilterOptions.durations}
+                value={filters.duration}
                 placeholder="Any duration"
                 onChange={(value) => updateFilters({ duration: value })}
+                searchPlaceholder="Search duration..."
               />
             </label>
             <fieldset className="advanced-filter-field tuition-filter">
@@ -160,12 +224,13 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
             </fieldset>
             <fieldset className="advanced-filter-field scholarship-filter">
               <legend>Scholarship</legend>
-              <Select
-                value={filters.scholarship}
+              <SearchableSelect
+                label="Scholarship"
                 options={[{ value: "available", label: "Available" }, { value: "unavailable", label: "Not available" }]}
+                value={filters.scholarship}
                 placeholder="Any scholarship status"
-                aria-label="Scholarship availability"
                 onChange={(value) => updateFilters({ scholarship: value })}
+                searchPlaceholder="Search scholarship status..."
               />
               <div className="scholarship-mode" role="group" aria-label="Scholarship range unit">
                 <button
@@ -217,11 +282,13 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
             </fieldset>
             <label className="advanced-filter-field">
               <span>Course language</span>
-              <Select
-                value={filters.language}
+              <SearchableSelect
+                label="Course language"
                 options={courseLanguages}
+                value={filters.language}
                 placeholder="Any language"
                 onChange={(value) => updateFilters({ language: value })}
+                searchPlaceholder="Search language..."
               />
             </label>
             <label className="verified-filter">
@@ -231,6 +298,14 @@ export function CourseFilters({ filters, onFiltersChange }: CourseFiltersProps) 
                 onChange={(event) => updateFilters({ verified: event.target.checked })}
               />
               Verified courses
+            </label>
+            <label className="verified-filter">
+              <input
+                type="checkbox"
+                checked={filters.interviewNeeded}
+                onChange={(event) => updateFilters({ interviewNeeded: event.target.checked })}
+              />
+              Interview needed
             </label>
           </div>
           <div className="advanced-filter-actions">
@@ -261,5 +336,6 @@ const emptyFilters: CourseFilterValues = {
   intake: "",
   language: "",
   verified: false,
+  interviewNeeded: false,
   partner: "",
 };

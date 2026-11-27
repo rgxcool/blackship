@@ -1,13 +1,16 @@
 import { courseSortOptions, initialCourseSort } from "../model/course-directory.mock";
+import { SearchableSelect } from "@/shared/ui";
 
 interface ResultsHeaderProps {
   view: "list" | "grid";
   onViewChange: (view: "list" | "grid") => void;
   resultCount: number;
   query: string;
+  sortBy: string;
+  onSortBy: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function ResultsHeader({ view, onViewChange, resultCount, query }: ResultsHeaderProps) {
+export function ResultsHeader({ view, onViewChange, resultCount, query, sortBy, onSortBy }: ResultsHeaderProps) {
   return (
     <div className="results-header">
       <p className="results-copy">
@@ -21,13 +24,14 @@ export function ResultsHeader({ view, onViewChange, resultCount, query }: Result
       <div className="results-controls">
         <label className="sort-control">
           <span>Sort by</span>
-          <select aria-label="Sort courses" defaultValue={initialCourseSort}>
-            {courseSortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <SearchableSelect
+            label="Sort by"
+            options={courseSortOptions}
+            value={sortBy}
+            placeholder="Any sort option"
+            onChange={(value) => onSortBy(value)}
+            searchPlaceholder="Search sort option..."
+          />
         </label>
         <div className="view-toggle" role="group" aria-label="Results view">
           <button

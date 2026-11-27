@@ -1,5 +1,4 @@
 import { courses } from "./courses.mock";
-import { iso3166Countries } from "@/shared/lib/countries";
 
 const directoryCounts = {
   universities: 5466,
@@ -40,7 +39,7 @@ export const courseFilterOptions = [
   {
     label: "Country",
     placeholder: "Any country",
-    options: iso3166Countries.map((country) => country.name),
+    options: [],
   },
   { label: "Study level", placeholder: "Any level", options: unique(courses.map((course) => course.level)) },
   { label: "Intake", placeholder: "Any intake", options: intakeMonths },

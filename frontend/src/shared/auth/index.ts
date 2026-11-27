@@ -1,1 +1,2 @@
-export { completeLogin, getToken, login, logout } from './casdoor';
+export { completeLogin, getProfile, getToken, isAuthConfigured, login, logout } from './casdoor';
+export type { CasdoorProfile } from './casdoor';

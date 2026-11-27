@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { logout } from "@/shared/auth";
-import { initialCourseSearchQuery } from "../model/course-directory.mock";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getCountryByIso3 } from "@/shared/api";
+import { initialCourseSearchQuery, initialCourseSort } from "../model/course-directory.mock";
 import type { Course, CourseFilterValues } from "../model/course";
 import { courses } from "../model/courses.mock";
-import { getCountryIso3 } from "@/shared/lib/countries";
 import { CourseFilters } from "./course-filters";
 import { CourseRow } from "./course-row";
 import { CourseSearchBar } from "./course-search-bar";
@@ -32,10 +32,21 @@ export function CoursesPage() {
     intake: "",
     language: "",
     verified: false,
+    interviewNeeded: false,
     partner: "",
   });
+  const [sortBy, setSortBy] = useState<string>(initialCourseSort);
   const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
-  const filteredCourses = filterCourses(courses, query, filters);
+  const { data: selectedCountry } = useQuery({
+    queryKey: ["countries", "by-iso3", filters.country],
+    queryFn: ({ signal }) => getCountryByIso3(filters.country, signal),
+    enabled: Boolean(filters.country),
+    staleTime: 5 * 60 * 1000,
+  });
+  const filteredCourses = useMemo(
+    () => filterCourses(courses, query, filters, selectedCountry?.name),
+    [query, filters, selectedCountry?.name],
+  );
   const allCoursesSelected = filteredCourses.length > 0 && filteredCourses.every((course) => selectedCourseIds.includes(course.id));
 
   const toggleCourseSelection = (courseId: string, selected: boolean) => {
@@ -50,9 +61,6 @@ export function CoursesPage() {
     <main className="courses-page">
       <div className="page-shell">
         <header className="page-heading">
-          <button type="button" className="logout-button" onClick={() => void logout()}>
-            Log out
-          </button>
           <p className="page-eyebrow">Global education directory</p>
           <h1>Course directory</h1>
           <p className="page-description">
@@ -76,6 +84,8 @@ export function CoursesPage() {
             onViewChange={setView}
             resultCount={filteredCourses.length}
             query={query}
+            sortBy={sortBy}
+            onSortBy={setSortBy}
           />
           <div className="course-table" data-view={view}>
             <div className="course-table-header">
@@ -115,13 +125,25 @@ export function CoursesPage() {
   );
 }
 
-function filterCourses(coursesToFilter: Course[], query: string, filters: CourseFilterValues) {
+function filterCourses(
+  coursesToFilter: Course[],
+  query: string,
+  filters: CourseFilterValues,
+  selectedCountryName?: string,
+) {
   const normalizedQuery = query.trim().toLowerCase();
 
   return coursesToFilter.filter((course) => {
     const searchableText = course.title.toLowerCase();
     if (normalizedQuery && !searchableText.includes(normalizedQuery)) return false;
-    if (filters.country && getCountryIso3(course.country) !== filters.country) return false;
+    if (filters.country) {
+      if (
+        !selectedCountryName ||
+        course.country.toLowerCase() !== selectedCountryName.toLowerCase()
+      ) {
+        return false;
+      }
+    }
     if (filters.university && course.university !== filters.university) return false;
     if (filters.level && !course.level.startsWith(filters.level)) return false;
     if (filters.stream && course.stream !== filters.stream) return false;

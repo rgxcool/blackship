@@ -1,6 +1,6 @@
 
 # Environment (keep the .example files)
-.env
+frontend/.env
 .env.*
 !.env.example
 
@@ -35,7 +35,7 @@ build/
 .vite/
 
 # Environment
-.env
+frontend/.env
 .env.local
 .env.*.local
 

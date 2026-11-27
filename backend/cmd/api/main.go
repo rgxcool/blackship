@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"centralize-directory/internal/course"
 	"centralize-directory/internal/infrastructure/auth"
 	"centralize-directory/internal/infrastructure/config"
 	"centralize-directory/internal/infrastructure/database"
@@ -20,9 +21,14 @@ func main() {
 		fx.Provide(
 			config.Load,
 			database.NewPostgres,
+			database.NewGorm,
 			auth.NewClient,
+			server.NewRouter,
+			server.NewAPI,
 			server.NewServer,
 		),
+
+		course.Module,
 
 		fx.Invoke(func(
 			db *pgxpool.Pool,

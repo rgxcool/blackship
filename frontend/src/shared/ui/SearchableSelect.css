@@ -1,6 +1,11 @@
 .searchable-select {
   position: relative;
   min-width: 170px;
+  max-width: 240px;
+}
+
+.searchable-select-control {
+  position: relative;
 }
 
 .searchable-select-trigger {
@@ -9,31 +14,85 @@
   min-height: 38px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   padding: 0 11px;
-  border: 1px solid #e0e6ef;
+  border: 1px solid var(--border, #e5e7eb);
   border-radius: 7px;
   background: #fff;
-  color: #536177;
+  color: #555d6c;
   cursor: pointer;
   font: inherit;
   font-size: 12px;
   text-align: left;
 }
 
+.searchable-select-trigger > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchable-select-trigger.has-clear > span:first-child {
+  padding-right: 24px;
+}
+
+.searchable-select-clear {
+  position: absolute;
+  top: 50%;
+  right: 27px;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.searchable-select-clear:hover {
+  background: #f0f3ff;
+  color: #5b46f6;
+}
+
+.searchable-select-clear svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
 .searchable-select-chevron {
-  color: #8490a2;
-  font-size: 15px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: #6b7280;
+}
+
+.searchable-select-chevron svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .searchable-select-menu {
   position: absolute;
-  z-index: 20;
+  z-index: 30;
   top: calc(100% + 6px);
   left: 0;
   width: min(290px, calc(100vw - 32px));
   padding: 12px;
-  border: 1px solid #e0e6ef;
+  border: 1px solid var(--border, #e5e7eb);
   border-radius: 9px;
   background: #fff;
   box-shadow: 0 12px 30px rgb(26 47 79 / 14%);
@@ -76,6 +135,10 @@
 }
 
 .searchable-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
   padding: 9px 8px;
   border: 0;
@@ -86,6 +149,17 @@
   font: inherit;
   font-size: 12px;
   text-align: left;
+}
+
+.searchable-select-check {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
 }
 
 .searchable-select-option:hover,
@@ -105,5 +179,11 @@
   .searchable-select {
     width: 100%;
     min-width: 0;
+    max-width: none;
+  }
+
+  .searchable-select:nth-child(2n) .searchable-select-menu {
+    right: 0;
+    left: auto;
   }
 }
