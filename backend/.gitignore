@@ -1,0 +1,10 @@
+# Local secrets (keep the example)
+.env
+.env.*
+!.env.example
+
+# Build output and test files
+bin/
+tmp/
+*.test
+*.out

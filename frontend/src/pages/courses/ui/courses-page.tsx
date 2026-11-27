@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logout } from "@/shared/auth";
 import { initialCourseSearchQuery } from "../model/course-directory.mock";
 import type { Course, CourseFilterValues } from "../model/course";
 import { courses } from "../model/courses.mock";
@@ -49,6 +50,9 @@ export function CoursesPage() {
     <main className="courses-page">
       <div className="page-shell">
         <header className="page-heading">
+          <button type="button" className="logout-button" onClick={() => void logout()}>
+            Log out
+          </button>
           <p className="page-eyebrow">Global education directory</p>
           <h1>Course directory</h1>
           <p className="page-description">
