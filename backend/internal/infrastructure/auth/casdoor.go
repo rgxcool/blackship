@@ -26,8 +26,6 @@ func NewClient(cfg *config.Config) *casdoorsdk.Client {
 	)
 }
 
-// Handler registers the sign-in route on mux and requires a valid access token
-// for every other request, so new routes are protected by default.
 func Handler(client *casdoorsdk.Client, mux *http.ServeMux) http.Handler {
 	mux.HandleFunc("POST "+signinPath, signin(client))
 
@@ -43,8 +41,6 @@ func Handler(client *casdoorsdk.Client, mux *http.ServeMux) http.Handler {
 	})
 }
 
-// verify checks signature and expiry, and that the token is an access token
-// issued to this application (organizations can share one certificate).
 func verify(client *casdoorsdk.Client, token string) error {
 	claims, err := client.ParseJwtToken(token)
 	if err != nil {

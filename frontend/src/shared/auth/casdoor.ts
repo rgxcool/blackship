@@ -57,13 +57,10 @@ export async function completeLogin(search: string): Promise<string> {
 export async function logout(): Promise<void> {
   const token = localStorage.getItem(TOKEN_KEY);
   try {
-    // No `credentials: 'include'`: Casdoor's CORS does not allow it, so the
-    // browser would block the call. The Bearer token identifies the session.
     const res = await fetch(`${SERVER_URL}/api/sso-logout?logoutAll=true`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });
-    // Casdoor reports failures as HTTP 200 with `status: "error"`.
     const body = await res.json();
     if (body.status !== 'ok') console.error('SSO logout failed:', body.msg);
   } catch (err) {
