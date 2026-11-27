@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"centralize-directory/internal/infrastructure/auth"
 	"centralize-directory/internal/infrastructure/config"
 	"centralize-directory/internal/infrastructure/database"
 	"centralize-directory/internal/infrastructure/server"
@@ -19,6 +20,7 @@ func main() {
 		fx.Provide(
 			config.Load,
 			database.NewPostgres,
+			auth.NewClient,
 			server.NewServer,
 		),
 
